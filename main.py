@@ -1,7 +1,5 @@
 import pandas as pd
 import os
-import mlflow
-
 from config import cfg # Use the global cfg instance
 from utils.general_utils import set_seed
 from training.trainer import run_training
@@ -58,8 +56,6 @@ def main():
         print("Will generate spectrograms on-the-fly during training (if not already processed by dataset).")
 
     # Set MLflow experiment
-    mlflow.set_experiment(cfg.mlflow_experiment_name)
-    print(f"MLflow experiment set to: '{cfg.mlflow_experiment_name}'")
 
     # Run training
     mean_auc = run_training(train_df_full, cfg)

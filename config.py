@@ -30,17 +30,20 @@ class CFG:
     TARGET_DURATION = 5.0
     TARGET_SHAPE = (256, 256)
 
-    N_FFT = 1024
+    N_FFT = 2048
     HOP_LENGTH = 512
-    N_MELS = 128
-    FMIN = 50
-    FMAX = 14000
+    N_MELS = 256
+    FMIN = 20
+    FMAX = 16000
 
     # Training
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    epochs = 10
+    epochs = 20
     batch_size = 64
-    criterion = 'BCEWithLogitsLoss'
+    criterion         = 'FocalLoss'    # 或 'BCEWithLogitsLoss'
+    focal_alpha       = 0.25
+    focal_gamma       = 2.0
+    focal_reduction   = 'mean'         # 可选 'mean' 或 'sum'
 
     # Cross-validation
     n_fold = 5
@@ -60,8 +63,8 @@ class CFG:
     aug_prob = 0.5
     mixup_alpha = 0.5 # Set to 0 to disable mixup
 
-    # MLflow
-    mlflow_experiment_name = "BirdCLEF2025_Training"
+    # TensorBoard
+    tensorboard_log_dir = "./runs/BirdCLEF2025_Training"
 
     def update_debug_settings(self):
         if self.debug:
