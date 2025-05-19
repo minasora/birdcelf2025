@@ -1,0 +1,8 @@
+# Ignore experiment tracking and output
+mlruns/
+output/
+birdclef-2025/
+
+# Ignore virtual environment
+.venv/
+__pycache__/
