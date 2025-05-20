@@ -3,6 +3,7 @@ from torch.optim import lr_scheduler
 import torch.nn as nn
 from sklearn.metrics import roc_auc_score
 import numpy as np
+import torchvision
 
 
 import torch
@@ -57,8 +58,6 @@ class FocalLossBCE(torch.nn.Module):
         bce_loss = self.bce(logits, targets)
         return self.bce_weight * bce_loss + self.focal_weight * focall_loss
 
-def get_criterion(cfg):
-    return FocalLossBCE()
 
 
 

@@ -30,7 +30,7 @@ class CFG:
     TARGET_DURATION = 5.0
     TARGET_SHAPE = (256, 256)
 
-    N_FFT = 2048
+    N_FFT = 1024
     HOP_LENGTH = 512
     N_MELS = 256
     FMIN = 20
@@ -61,7 +61,7 @@ class CFG:
 
     # Augmentations
     aug_prob = 0.5
-    mixup_alpha = 0.5 # Set to 0 to disable mixup
+    mixup_alpha = 0# Set to 0 to disable mixup
 
     # TensorBoard
     tensorboard_log_dir = "./runs/BirdCLEF2025_Training"
