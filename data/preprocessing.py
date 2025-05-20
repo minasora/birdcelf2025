@@ -36,29 +36,44 @@ def process_audio_file(audio_path, cfg):
     """Process a single audio file to get the mel spectrogram"""
     try:
         audio_data, _ = librosa.load(audio_path, sr=cfg.FS)
+
+        # -------- ① 计算目标采样点数 --------
         target_samples = int(cfg.TARGET_DURATION * cfg.FS)
 
-        # 短音频循环拼接
+        # -------- ② 短音频循环拼接 --------
         if len(audio_data) < target_samples:
             n_copy = math.ceil(target_samples / len(audio_data))
             audio_data = np.tile(audio_data, n_copy)
 
-        # 中心截取
-        start_idx = max(0, len(audio_data)//2 - target_samples//2)
-        end_idx = start_idx + target_samples
-        center_audio = audio_data[start_idx:end_idx]
+        # -------- ③ 选择截取方式 --------
+        if getattr(cfg, "RANDOM_START", True):
+            # 保持原来的「中心截取」
+            start_idx = max(0, len(audio_data) // 2 - target_samples // 2)
+            end_idx   = start_idx + target_samples
+            segment   = audio_data[start_idx:end_idx]
+        else:
 
-        # 不足长度时补零
-        if len(center_audio) < target_samples:
-            center_audio = np.pad(center_audio,
-                                  (0, target_samples - len(center_audio)),
-                                  mode='constant')
+            end_idx = min(len(audio_data), int(cfg.TARGET_DURATION * cfg.FS))
+            segment = audio_data[:end_idx]
 
-        mel_spec = audio2melspec(center_audio, cfg)
+        # -------- ④ 不足长度则补零 --------
+        if len(segment) < target_samples:
+            segment = np.pad(
+                segment,
+                (0, target_samples - len(segment)),
+                mode="constant"
+            )
 
-        # 调整到目标形状
+        # -------- ⑤ 转 mel spec --------
+        mel_spec = audio2melspec(segment, cfg)
+
+        # -------- ⑥ 调整到目标形状 --------
         if mel_spec.shape != cfg.TARGET_SHAPE:
-            mel_spec = cv2.resize(mel_spec, cfg.TARGET_SHAPE, interpolation=cv2.INTER_LINEAR)
+            mel_spec = cv2.resize(
+                mel_spec,
+                cfg.TARGET_SHAPE,
+                interpolation=cv2.INTER_LINEAR
+            )
 
         return mel_spec.astype(np.float32)
 

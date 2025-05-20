@@ -26,8 +26,8 @@ class BirdCLEFModel(nn.Module):
             cfg.model_name,
             pretrained=cfg.pretrained,
             in_chans=cfg.in_channels,
-            drop_rate=0.2,      # Example, you might want to make these configurable in CFG
-            drop_path_rate=0.2  # Example
+            drop_rate=0.1,      # Example, you might want to make these configurable in CFG
+            drop_path_rate=0.1  # Example
         )
 
         if 'efficientnet' in cfg.model_name:

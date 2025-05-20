@@ -3,8 +3,13 @@ from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 import random
+
+from config import CFG
 # from config import CFG # cfg will be passed as argument
 from .preprocessing import process_audio_file # Relative import
+
+from .augment import SpectrogramAugment 
+
 
 class BirdCLEFDatasetFromNPY(Dataset):
     def __init__(self, df, cfg, spectrograms=None, mode="train"):
@@ -18,6 +23,23 @@ class BirdCLEFDatasetFromNPY(Dataset):
         self.num_classes = len(self.species_ids)
         self.cfg.num_classes = self.num_classes # Update CFG
         self.label_to_idx = {label: idx for idx, label in enumerate(self.species_ids)}
+        if mode == "train":
+            self.transforms = SpectrogramAugment(
+                image_size=cfg.TARGET_SHAPE[1],
+                randaugment_n=2, randaugment_m=9,
+                time_mask_param=40, freq_mask_param=12,
+                erase_prob=0.7
+            )
+        elif mode == "val":
+            # 仅缩放+归一化
+            self.transforms = SpectrogramAugment(
+                image_size=cfg.TARGET_SHAPE[1],
+                randaugment_n=0, randaugment_m=0,   # 关闭 RandAug
+                erase_prob=0.0,                     # 关闭擦除
+                time_mask_param=0, freq_mask_param=0
+            )
+        else:
+            self.transforms = None
 
         if 'filepath' not in self.df.columns: # Ensure filepath exists
             self.df['filepath'] = self.cfg.train_datadir + '/' + self.df.filename
@@ -58,10 +80,10 @@ class BirdCLEFDatasetFromNPY(Dataset):
             # print(f"Warning: Spectrogram for {samplename} (file: {row.get('filepath', 'N/A')}) not found/generated. Using zeros.")
 
 
-        spec = torch.tensor(spec, dtype=torch.float32).unsqueeze(0)  # Add channel dimension
+        spec = torch.tensor(spec, dtype=torch.float32).unsqueeze(0)  # [1,H,W]
 
-        if self.mode == "train" and random.random() < self.cfg.aug_prob:
-            spec = self.apply_spec_augmentations(spec)
+        if self.transforms is not None:
+            spec = self.transforms(spec)
 
         target = self.encode_label(row['primary_label'])
 

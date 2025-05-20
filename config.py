@@ -27,20 +27,20 @@ class CFG:
     # Audio Processing
     LOAD_DATA = False  # Set to True to load pre-computed spectrograms
     FS = 32000
-    TARGET_DURATION = 5.0
+    TARGET_DURATION = 5
     TARGET_SHAPE = (256, 256)
-
-    N_FFT = 1024
-    HOP_LENGTH = 512
-    N_MELS = 256
+    RANDOM_START: bool = True  
+    N_FFT = 2048
+    HOP_LENGTH = 128
+    N_MELS = 128
     FMIN = 20
-    FMAX = 16000
+    FMAX = 16_000
 
     # Training
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     epochs = 20
     batch_size = 64
-    criterion         = 'FocalLoss'    # 或 'BCEWithLogitsLoss'
+    criterion         = 'BCEWithLogitsLoss'    # 或 'BCEWithLogitsLoss'
     focal_alpha       = 0.25
     focal_gamma       = 2.0
     focal_reduction   = 'mean'         # 可选 'mean' 或 'sum'
@@ -51,7 +51,7 @@ class CFG:
 
     # Optimizer
     optimizer = 'AdamW'
-    lr = 5e-4
+    lr = 1e-3
     weight_decay = 1e-5
 
     # Scheduler
@@ -60,8 +60,8 @@ class CFG:
     T_max = epochs # For CosineAnnealingLR
 
     # Augmentations
-    aug_prob = 0.5
-    mixup_alpha = 0# Set to 0 to disable mixup
+
+    mixup_alpha = 0.2# Set to 0 to disable mixup
 
     # TensorBoard
     tensorboard_log_dir = "./runs/BirdCLEF2025_Training"

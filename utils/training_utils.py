@@ -136,6 +136,8 @@ def get_criterion(cfg):
         gamma     = getattr(cfg, 'focal_gamma', 2.0)
         reduction = getattr(cfg, 'focal_reduction', 'mean')
         return FocalLossBCE(alpha=alpha, gamma=gamma, reduction=reduction)
+    elif cfg.criterion == "CrossEntropyLoss":
+        return nn.CrossEntropyLoss()
     else:
         raise NotImplementedError(f"Criterion {cfg.criterion} not implemented")
 

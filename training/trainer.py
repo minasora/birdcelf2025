@@ -8,12 +8,13 @@ import time
 import gc
 import os
 from torch.utils.tensorboard import SummaryWriter
-
-# from config import CFG # cfg will be passed as argument
+from config import CFG # cfg will be passed as argument
 from data.dataset import BirdCLEFDatasetFromNPY, collate_fn
 from data.preprocessing import generate_spectrograms # If on-the-fly generation is needed for initial run
 from models.bird_model import BirdCLEFModel
 from utils.training_utils import get_optimizer, get_scheduler, get_criterion, calculate_auc
+import albumentations as A
+
 
 def train_one_epoch(model, loader, optimizer, criterion, device, cfg, scheduler=None): # Added cfg
     model.train()
